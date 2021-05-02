@@ -1,0 +1,13 @@
+-- HW#3
+-- HW#3
+-- Section 2
+-- Student ID: 012662273
+-- Chau, Caitlyn
+
+connect to cs157a^
+drop TRIGGER hw3.classcheck^
+drop table hw3.schedule^
+drop table hw3.class_prereq^
+drop table hw3.class^
+drop table hw3.student^
+terminate;

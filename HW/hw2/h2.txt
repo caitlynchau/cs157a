@@ -1,0 +1,161 @@
+Caitlyn Chau
+CS 157A HW2
+
+--- output below ---
+
+[db2inst1@20602586ffff ~]$ db2 -tvf h2.sql
+connect to sample
+
+   Database Connection Information
+
+ Database server        = DB2/LINUXX8664 11.5.5.0
+ SQL authorization ID   = DB2INST1
+ Local database alias   = SAMPLE
+
+
+select empno, lastname, firstnme from employee where hiredate between '2000-01-01' and '2005-12-31' order by lastname,firstnme
+
+EMPNO  LASTNAME        FIRSTNME
+------ --------------- ------------
+000150 ADAMSON         BRUCE
+000200 BROWN           DAVID
+000090 HENDERSON       EILEEN
+200220 JOHN            REBA
+000260 JOHNSON         SYBIL
+000030 KWAN            SALLY
+000240 MARINO          SALVATORE
+200240 MONTEVERDE      ROBERT
+200120 ORLANDO         GREG
+000070 PULASKI         EVA
+000130 QUINTANA        DELORES
+000180 SCOUTTEN        MARILYN
+000300 SMITH           PHILIP
+000100 SPENSER         THEODORE
+000060 STERN           IRVING
+000020 THOMPSON        MICHAEL
+000190 WALKER          JAMES
+200170 YAMAMOTO        KIYOSHI
+
+  18 record(s) selected.
+
+
+select empno, lastname, firstnme, job, deptno, deptname from employee inner join department on employee.workdept = department.deptno where deptname='OPERATIONS' or deptname='PLANNING' order by deptname
+
+EMPNO  LASTNAME        FIRSTNME     JOB      DEPTNO DEPTNAME
+------ --------------- ------------ -------- ------ ------------------------------------
+000090 HENDERSON       EILEEN       MANAGER  E11    OPERATIONS
+000280 SCHNEIDER       ETHEL        OPERATOR E11    OPERATIONS
+000290 PARKER          JOHN         OPERATOR E11    OPERATIONS
+000300 SMITH           PHILIP       OPERATOR E11    OPERATIONS
+000310 SETRIGHT        MAUDE        OPERATOR E11    OPERATIONS
+200280 SCHWARTZ        EILEEN       OPERATOR E11    OPERATIONS
+200310 SPRINGER        MICHELLE     OPERATOR E11    OPERATIONS
+000020 THOMPSON        MICHAEL      MANAGER  B01    PLANNING
+
+  8 record(s) selected.
+
+
+select empno, lastname, firstnme, salary + bonus + comm as totalcomp from employee order by totalcomp desc
+
+EMPNO  LASTNAME        FIRSTNME     TOTALCOMP
+------ --------------- ------------ -------------
+000010 HAAS            CHRISTINE        157970.00
+000030 KWAN            SALLY            102110.00
+000070 PULASKI         EVA               99763.00
+000020 THOMPSON        MICHAEL           98350.00
+000090 HENDERSON       EILEEN            92730.00
+000100 SPENSER         THEODORE          88742.00
+000050 GEYER           JOHN              84189.00
+000130 QUINTANA        DELORES           76204.00
+000060 STERN           IRVING            75330.00
+200220 JOHN            REBA              72827.00
+000140 NICHOLLS        HEATHER           71294.00
+200140 NATZ            KIM               71294.00
+000110 LUCCHESSI       VINCENZO          71120.00
+000210 JONES           WILLIAM           70132.00
+200170 YAMAMOTO        KIYOSHI           67154.00
+000160 PIANKA          ELIZABETH         64430.00
+000200 BROWN           DAVID             60557.00
+000150 ADAMSON         BRUCE             57802.00
+000180 SCOUTTEN        MARILYN           53547.00
+000220 LUTZ            JENNIFER          52827.00
+000190 WALKER          JAMES             52486.00
+000120 O'CONNELL       SEAN              52190.00
+200010 HEMMINGER       DIAN              51720.00
+000240 MARINO          SALVATORE         51661.00
+000250 SMITH           DANIEL            51114.00
+000260 JOHNSON         SYBIL             48930.00
+200280 SCHWARTZ        EILEEN            48850.00
+000330 LEE             WING              47900.00
+000170 YOSHIMURA       MASATOSHI         47154.00
+000340 GOUNOT          JASON             46247.00
+000230 JEFFERSON       JAMES             44354.00
+200120 ORLANDO         GREG              42190.00
+000320 MEHTA           RAMLAL            41946.00
+200240 MONTEVERDE      ROBERT            40661.00
+000270 PEREZ           MARIA             40070.00
+000300 SMITH           PHILIP            39570.00
+000280 SCHNEIDER       ETHEL             38850.00
+200330 WONG            HELENA            37900.00
+000310 SETRIGHT        MAUDE             37472.00
+200310 SPRINGER        MICHELLE          37472.00
+000290 PARKER          JOHN              36867.00
+200340 ALONZO          ROY               34247.00
+
+  42 record(s) selected.
+
+
+select empno, lastname, firstnme, salary + bonus + comm as totalcomp from employee order by totalcomp limit 10
+
+EMPNO  LASTNAME        FIRSTNME     TOTALCOMP
+------ --------------- ------------ -------------
+200340 ALONZO          ROY               34247.00
+000290 PARKER          JOHN              36867.00
+000310 SETRIGHT        MAUDE             37472.00
+200310 SPRINGER        MICHELLE          37472.00
+200330 WONG            HELENA            37900.00
+000280 SCHNEIDER       ETHEL             38850.00
+000300 SMITH           PHILIP            39570.00
+000270 PEREZ           MARIA             40070.00
+200240 MONTEVERDE      ROBERT            40661.00
+000320 MEHTA           RAMLAL            41946.00
+
+  10 record(s) selected.
+
+
+select job, count(*) as total from employee group by job having count(*) > 0 order by total desc
+
+JOB      TOTAL
+-------- -----------
+DESIGNER          10
+CLERK              8
+MANAGER            7
+OPERATOR           6
+FIELDREP           5
+ANALYST            3
+SALESREP           2
+PRES               1
+
+  8 record(s) selected.
+
+
+select deptno, deptname, count(empno) as total from department inner join employee on department.deptno = employee.workdept group by deptno, deptname having count(empno) > 0 order by total
+
+DEPTNO DEPTNAME                             TOTAL
+------ ------------------------------------ -----------
+B01    PLANNING                                       1
+E01    SUPPORT SERVICES                               1
+C01    INFORMATION CENTER                             4
+A00    SPIFFY COMPUTER SERVICE DIV.                   5
+E21    SOFTWARE SUPPORT                               6
+D21    ADMINISTRATION SYSTEMS                         7
+E11    OPERATIONS                                     7
+D11    MANUFACTURING SYSTEMS                         11
+
+  8 record(s) selected.
+
+
+terminate
+DB20000I  The TERMINATE command completed successfully.
+
+[db2inst1@20602586ffff ~]$

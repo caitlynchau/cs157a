@@ -1,0 +1,397 @@
+connect to cs157a
+
+   Database Connection Information
+
+ Database server        = DB2/LINUXX8664 11.5.0.0
+ SQL authorization ID   = DB2INST1
+ Local database alias   = CS157A
+
+
+delete from hw3.student
+DB20000I  The SQL command completed successfully.
+
+delete from hw3.class
+DB20000I  The SQL command completed successfully.
+
+delete from hw3.class_prereq
+SQL0100W  No row was found for FETCH, UPDATE or DELETE; or the result of a 
+query is an empty table.  SQLSTATE=02000
+
+delete from hw3.schedule
+SQL0100W  No row was found for FETCH, UPDATE or DELETE; or the result of a 
+query is an empty table.  SQLSTATE=02000
+
+INSERT INTO hw3.student VALUES ('90000','John','Doe','M'), ('90001','Jane','Doe','F'), ('90002','James','Bond','M'), ('90003','Chris','Newman','U'), ('90004','Ken','Tsang','M')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.class VALUES ('01000','CS100W','Technical Writing Workshop'), ('10000','CS46A','Intro to Programming'), ('10001','CS46B','Intro to Data Structures'), ('10002','CS47','Intro to Computer Systems'), ('10003','CS49J','Programming in Java'), ('20000','CS146','Data Structures and Algorithms'), ('20001','CS157A','Intro to Database Mgmt Systems'), ('20002','CS149','Operating Systems'), ('20003','CS160','Intro to Programming'), ('20004','CS157B','Database Management Systems II'), ('20005','CS157C','NoSQL Database Systems'), ('20006','CS151','Object-Oriented Design')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.class_prereq VALUES ('10001','10000'), ('10002','10001'), ('20000','10001'), ('20001','20000'), ('20002','20000'), ('20003','01000'), ('20003','20000'), ('20003','20006'), ('20004','20001'), ('20005','20001'), ('20006','10001')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.student VALUES ('00001','Test','Student 1','M')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.student VALUES ('00002','Test','Student 2','F')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.student VALUES ('00003','Test','Student 3','U')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.student VALUES ('00001','Duplicate','Student ID test','F')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0803N  One or more values in the INSERT statement, UPDATE statement, or 
+foreign key update caused by a DELETE statement are not valid because the 
+primary key, unique constraint or unique index identified by "1" constrains 
+table "HW3.STUDENT" from having duplicate values for the index key.  
+SQLSTATE=23505
+
+INSERT INTO hw3.student VALUES (NULL, 'Test','Student 2','M')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0407N  Assignment of a NULL value to a NOT NULL column "TBSPACEID=2, 
+TABLEID=8, COLNO=0" is not allowed.  SQLSTATE=23502
+
+INSERT INTO hw3.student VALUES ('00004', NULL,'Student 3','M')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0407N  Assignment of a NULL value to a NOT NULL column "TBSPACEID=2, 
+TABLEID=8, COLNO=1" is not allowed.  SQLSTATE=23502
+
+INSERT INTO hw3.student VALUES ('00004', 'Test','Student 4','f')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0545N  The requested operation is not allowed because a row does not 
+satisfy the check constraint "HW3.STUDENT.SQL201110052315710".  SQLSTATE=23513
+
+INSERT INTO hw3.student VALUES ('00005', 'Test','Student 5','Z')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0545N  The requested operation is not allowed because a row does not 
+satisfy the check constraint "HW3.STUDENT.SQL201110052315710".  SQLSTATE=23513
+
+INSERT INTO hw3.student VALUES ('00006', 'Test','Student 6',NULL)
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0407N  Assignment of a NULL value to a NOT NULL column "TBSPACEID=2, 
+TABLEID=8, COLNO=3" is not allowed.  SQLSTATE=23502
+
+INSERT INTO hw3.class VALUES ('00010','CS42','Discrete Mathematics')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.class VALUES ('00020','CS185C','Special Topics')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.class VALUES ('00010','Duplicate','Class ID test')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0803N  One or more values in the INSERT statement, UPDATE statement, or 
+foreign key update caused by a DELETE statement are not valid because the 
+primary key, unique constraint or unique index identified by "1" constrains 
+table "HW3.CLASS" from having duplicate values for the index key.  
+SQLSTATE=23505
+
+INSERT INTO hw3.class VALUES (NULL,'CS42','Bad ID Test')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0407N  Assignment of a NULL value to a NOT NULL column "TBSPACEID=2, 
+TABLEID=9, COLNO=0" is not allowed.  SQLSTATE=23502
+
+INSERT INTO hw3.class VALUES ('00011',NULL,'NULL Test')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0407N  Assignment of a NULL value to a NOT NULL column "TBSPACEID=2, 
+TABLEID=9, COLNO=1" is not allowed.  SQLSTATE=23502
+
+INSERT INTO hw3.class VALUES ('00012','CS25',NULL)
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0407N  Assignment of a NULL value to a NOT NULL column "TBSPACEID=2, 
+TABLEID=9, COLNO=2" is not allowed.  SQLSTATE=23502
+
+INSERT INTO hw3.class_prereq VALUES ('00010','99999')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0530N  The insert or update value of the FOREIGN KEY 
+"HW3.CLASS_PREREQ.PREREQ_IDFK" is not equal to any value of the parent key of 
+the parent table.  SQLSTATE=23503
+
+INSERT INTO hw3.class_prereq VALUES ('00010',NULL)
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0407N  Assignment of a NULL value to a NOT NULL column "TBSPACEID=2, 
+TABLEID=10, COLNO=1" is not allowed.  SQLSTATE=23502
+
+INSERT INTO hw3.class_prereq VALUES ('99999','00010')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0530N  The insert or update value of the FOREIGN KEY 
+"HW3.CLASS_PREREQ.CLASS_IDFK" is not equal to any value of the parent key of 
+the parent table.  SQLSTATE=23503
+
+INSERT INTO hw3.schedule VALUES ('99999','10000',1,2019,'A')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0530N  The insert or update value of the FOREIGN KEY 
+"HW3.SCHEDULE.STUDENTIDFK" is not equal to any value of the parent key of the 
+parent table.  SQLSTATE=23503
+
+INSERT INTO hw3.schedule VALUES ('00001','99999',2,2019,'B')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0530N  The insert or update value of the FOREIGN KEY 
+"HW3.SCHEDULE.CLASSIDFK" is not equal to any value of the parent key of the 
+parent table.  SQLSTATE=23503
+
+INSERT INTO hw3.schedule VALUES ('00001','00020',4,2019,'C')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0545N  The requested operation is not allowed because a row does not 
+satisfy the check constraint "HW3.SCHEDULE.SQL201110052315800".  
+SQLSTATE=23513
+
+INSERT INTO hw3.schedule VALUES ('00002','00020',3,2019,'E')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0545N  The requested operation is not allowed because a row does not 
+satisfy the check constraint "HW3.SCHEDULE.SQL201110052315810".  
+SQLSTATE=23513
+
+INSERT INTO hw3.schedule VALUES ('00003','00020',3,2019,'a')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0545N  The requested operation is not allowed because a row does not 
+satisfy the check constraint "HW3.SCHEDULE.SQL201110052315810".  
+SQLSTATE=23513
+
+INSERT INTO hw3.schedule VALUES ('00001','00020',1,2019,'A')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.class_prereq VALUES ('00020','00010')
+DB20000I  The SQL command completed successfully.
+
+SELECT * FROM hw3.class_prereq WHERE hw3.class_prereq.class_id = '00020'
+
+CLASS_ID PREREQ_ID
+-------- ---------
+00020    00010    
+
+  1 record(s) selected.
+
+
+SELECT * FROM hw3.schedule WHERE hw3.schedule.class_id = '00020'
+
+STUDENT_ID CLASS_ID SEMESTER    YEAR        GRADE
+---------- -------- ----------- ----------- -----
+00001      00020              1        2019 A    
+
+  1 record(s) selected.
+
+
+DELETE FROM hw3.class WHERE hw3.class.class_id = '00020'
+DB20000I  The SQL command completed successfully.
+
+SELECT * FROM hw3.class_prereq WHERE hw3.class_prereq.class_id = '00020'
+
+CLASS_ID PREREQ_ID
+-------- ---------
+
+  0 record(s) selected.
+
+
+SELECT * FROM hw3.schedule WHERE hw3.schedule.class_id = '00020'
+
+STUDENT_ID CLASS_ID SEMESTER    YEAR        GRADE
+---------- -------- ----------- ----------- -----
+
+  0 record(s) selected.
+
+
+DELETE from hw3.schedule
+SQL0100W  No row was found for FETCH, UPDATE or DELETE; or the result of a 
+query is an empty table.  SQLSTATE=02000
+
+INSERT INTO hw3.schedule VALUES ('90000','01000',1,2018,'C')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','10001',2,2018,NULL)
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+INSERT INTO hw3.schedule VALUES ('90000','10000',1,2018,NULL)
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','10001',1,2018,NULL)
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+UPDATE hw3.schedule SET hw3.schedule.grade = 'F' where hw3.schedule.student_id = '90000' AND hw3.schedule.class_id = '10000'
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','10001',1,2018,NULL)
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+UPDATE hw3.schedule SET hw3.schedule.grade = 'B' where hw3.schedule.student_id = '90000' AND hw3.schedule.class_id = '10000'
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','10001',2,2018,'A')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','20006',3,2018,'B')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','20003',1,2019,'B')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+INSERT INTO hw3.schedule VALUES ('90000','20001',1,2019,'B')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+INSERT INTO hw3.schedule VALUES ('90000','20000',3,2018,'A')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','20001',1,2019,'B')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90000','20003',1,2019,'B')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90001','01000',1,2018,'A')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90001','10001',2,2018,'B')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+INSERT INTO hw3.schedule VALUES ('90001','20001',1,2019,'B')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+INSERT INTO hw3.schedule VALUES ('90001','10000',1,2018,'A')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90001','10001',2,2018,'A')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90001','20003',1,2019,'B')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+INSERT INTO hw3.schedule VALUES ('90001','20006',3,2018,'B')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90001','20000',3,2018,'F')
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90001','20003',1,2019,'B')
+DB21034E  The command was processed as an SQL statement because it was not a 
+valid Command Line Processor command.  During SQL processing it returned:
+SQL0438N  Application raised error or warning with diagnostic text: "Missing 
+Pre-req".  SQLSTATE=88888
+
+UPDATE hw3.schedule SET hw3.schedule.grade = 'B' where hw3.schedule.student_id = '90001' AND hw3.schedule.class_id = '20000'
+DB20000I  The SQL command completed successfully.
+
+INSERT INTO hw3.schedule VALUES ('90001','20003',1,2019,'B')
+DB20000I  The SQL command completed successfully.
+
+select * from hw3.student
+
+STUDENT_ID FIRST                LAST                 GENDER
+---------- -------------------- -------------------- ------
+00001      Test                 Student 1            M     
+00002      Test                 Student 2            F     
+00003      Test                 Student 3            U     
+90000      John                 Doe                  M     
+90001      Jane                 Doe                  F     
+90002      James                Bond                 M     
+90003      Chris                Newman               U     
+90004      Ken                  Tsang                M     
+
+  8 record(s) selected.
+
+
+select * from hw3.class
+
+CLASS_ID NAME       DESC                          
+-------- ---------- ------------------------------
+00010    CS42       Discrete Mathematics          
+01000    CS100W     Technical Writing Workshop    
+10000    CS46A      Intro to Programming          
+10001    CS46B      Intro to Data Structures      
+10002    CS47       Intro to Computer Systems     
+10003    CS49J      Programming in Java           
+20000    CS146      Data Structures and Algorithms
+20001    CS157A     Intro to Database Mgmt Systems
+20002    CS149      Operating Systems             
+20003    CS160      Intro to Programming          
+20004    CS157B     Database Management Systems II
+20005    CS157C     NoSQL Database Systems        
+20006    CS151      Object-Oriented Design        
+
+  13 record(s) selected.
+
+
+select * from hw3.class_prereq
+
+CLASS_ID PREREQ_ID
+-------- ---------
+10001    10000    
+10002    10001    
+20000    10001    
+20001    20000    
+20002    20000    
+20003    01000    
+20003    20000    
+20003    20006    
+20004    20001    
+20005    20001    
+20006    10001    
+
+  11 record(s) selected.
+
+
+select * from hw3.schedule
+
+STUDENT_ID CLASS_ID SEMESTER    YEAR        GRADE
+---------- -------- ----------- ----------- -----
+90001      01000              1        2018 A    
+90001      10000              1        2018 A    
+90001      10001              2        2018 A    
+90001      20006              3        2018 B    
+90001      20000              3        2018 B    
+90001      20003              1        2019 B    
+90000      01000              1        2018 C    
+90000      10000              1        2018 B    
+90000      10001              2        2018 A    
+90000      20006              3        2018 B    
+90000      20000              3        2018 A    
+90000      20001              1        2019 B    
+90000      20003              1        2019 B    
+
+  13 record(s) selected.
+
+
+terminate
+DB20000I  The TERMINATE command completed successfully.
+
