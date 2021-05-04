@@ -376,11 +376,13 @@ public class BankingSystem {
 				int avg = rs.getInt(1);
 				System.out.printf("%11d \n", avg);
 			}
+			System.out.println(":: REPORT B - SUCCESS");
+			returnStatus = true;
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			// System.out.println(e.getMessage());
+			// e.printStackTrace();
+			returnStatus = false;
 		}
-		System.out.println(":: REPORT B - SUCCESS");
 	}
 
 	public static boolean validatePIN(String idInput, String pinInput) {

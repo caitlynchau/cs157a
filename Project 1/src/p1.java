@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class p1 {
@@ -161,27 +160,23 @@ public class p1 {
 				case "2":
 					valid = true;
 					closeAccountScreen(currentID);
-					// System.out.println("close account");
 					break;
 				case "3":
 					valid = true;
 					depositScreen(currentID);
-					// System.out.println("deposit");
 					break;
 				case "4":
 					valid = true;
 					withdrawScreen(currentID);
-					// System.out.println("withdraw");
 					break;
 				case "5":
 					valid = true;
 					transferScreen(currentID);
-					// System.out.println("transfer");
 					break;
 				case "6":
 					valid = true;
 					accountSummaryScreen(currentID);
-					// System.out.println("account summary");
+					customerMainMenu(currentID);
 					break;
 				case "7":
 					valid = true;
@@ -470,7 +465,7 @@ public class p1 {
 		BankingSystem.accountSummary(currentID + "");
 		boolean success = BankingSystem.returnStatus;
 
-		customerMainMenu(currentID);
+		//customerMainMenu(currentID);
 	}
 
 	public void administratorMainMenu() {
@@ -487,15 +482,35 @@ public class p1 {
 			switch(input) {
 				case "1":
 					valid = true;
-					//openAccountScreen(currentID);
+
+					boolean idValid = false;
+					String id = "";
+					int idAsInt = 0;
+
+					while (!idValid) {
+						try {
+							System.out.print("Enter the customer ID: ");
+							id = scanner.next();
+							idAsInt = Integer.valueOf(id);
+							if (idAsInt > 0 && BankingSystem.validateID(id)) {
+								idValid = true;
+							} else {
+								System.out.println("Error: ID is not valid");
+							}
+						} catch (NumberFormatException e) {
+							System.out.println("Error: ID must be an integer greater than 0");
+						}
+					}
+					accountSummaryScreen(idAsInt);
+					administratorMainMenu();
 					break;
 				case "2":
 					valid = true;
-					// closeAccountScreen(currentID);
+					reportAScreen();
 					break;
 				case "3":
 					valid = true;
-					// depositScreen(currentID);
+					reportBScreen();
 					break;
 				case "4":
 					valid = true;
@@ -515,16 +530,54 @@ public class p1 {
 	}
 
 	public void reportBScreen() {
-		
+		String min="", max="";
+		int minAsInt = 0;
+		int maxAsInt = 0;
+		boolean minValid = false;
+		boolean maxValid = false;
 
 		// validate min
+		while (!minValid) {
+			try {
+				System.out.print("Enter the minimum age: ");
+				min = scanner.next();
+				minAsInt = Integer.parseInt(min);
+				if (minAsInt >= 0) {
+					minValid = true;
+				} else {
+					System.out.println("Error: age must be an integer greater than 0. ");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Error: age must be an integer greater than 0. ");
+			}
+		}
 
 		// validate max
+		while (!maxValid) {
+			try {
+				System.out.print("Enter the maximum age: ");
+				max = scanner.next();
+				maxAsInt = Integer.parseInt(max);
+				if (maxAsInt < 0) {
+					System.out.println("Error: age must be an integer greater than 0. ");
+				} else if (maxAsInt < minAsInt) {
+					System.out.println("Error: maximum age must be less than minimum age (" + min + ")");
+				} 
+				else {
+					maxValid = true;
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Error: age must be an integer greater than 0. ");
+			}
+		}
+
+		// get report
+		BankingSystem.reportB(min, max);
+		boolean success = BankingSystem.returnStatus;
+
+		administratorMainMenu();
 		
 	}
-
-
-
 
 
 
