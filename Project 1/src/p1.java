@@ -102,7 +102,8 @@ public class p1 {
 		}
 
 		// insert new customer into database
-		boolean success = BankingSystem.newCustomer(name, gender, age, pin);
+		BankingSystem.newCustomer(name, gender, age, pin);
+		boolean success = BankingSystem.returnStatus;
 
 		if (success) {
 			// print out new customer's ID
@@ -125,23 +126,22 @@ public class p1 {
 		pin = scanner.nextLine();
 
 		if (id.equals("0") && pin.equals("0")) {
-			// call administratorMainMenu();
-		}
-
-		// validate ID and PIN
-		boolean success = BankingSystem.validatePIN(id, pin);
-		
-		if (success) {
-			System.out.println("Successfully logged in");
-			customerMainMenu(Integer.valueOf(id));
+			administratorMainMenu();
 		} else {
-			System.out.println("Error: Invalid ID or PIN");
+			// validate ID and PIN
+			boolean success = BankingSystem.validatePIN(id, pin);
+					
+			if (success) {
+				System.out.println("Successfully logged in");
+				customerMainMenu(Integer.valueOf(id));
+			} else {
+				System.out.println("Error: Invalid ID or PIN");
+			}
 		}
 	}
 
 
 	public void customerMainMenu(int currentID) {
-		//int currentCustomer = currentID;
 		System.out.println("Customer Main Menu");
 		String input = "";
 		boolean valid = false;
@@ -161,27 +161,27 @@ public class p1 {
 				case "2":
 					valid = true;
 					closeAccountScreen(currentID);
-					System.out.println("close account");
+					// System.out.println("close account");
 					break;
 				case "3":
 					valid = true;
-					// deposit();
-					System.out.println("deposit");
+					depositScreen(currentID);
+					// System.out.println("deposit");
 					break;
 				case "4":
 					valid = true;
-					// withdraw();
-					System.out.println("withdraw");
+					withdrawScreen(currentID);
+					// System.out.println("withdraw");
 					break;
 				case "5":
 					valid = true;
-					// transfer();
-					System.out.println("transfer");
+					transferScreen(currentID);
+					// System.out.println("transfer");
 					break;
 				case "6":
 					valid = true;
-					// accountSummary();
-					System.out.println("account summary");
+					accountSummaryScreen(currentID);
+					// System.out.println("account summary");
 					break;
 				case "7":
 					valid = true;
@@ -231,7 +231,7 @@ public class p1 {
 		// validate user amount input
 		while (!amountValid) {
 			try {
-				System.out.println("Enter the initial deposit: ");
+				System.out.print("Enter the initial deposit: ");
 				amount = scanner.next();
 				int amountAsInt = Integer.valueOf(amount);
 				if (amountAsInt >= 0) {
@@ -245,7 +245,8 @@ public class p1 {
 		}
 
 		// open new account
-		boolean success = BankingSystem.openAccount(id, type, amount);
+		BankingSystem.openAccount(id, type, amount);
+		boolean success = BankingSystem.returnStatus;
 
 		// print out account number
 		if (success) {
@@ -279,7 +280,8 @@ public class p1 {
 			}
 		}
 
-		boolean success = BankingSystem.closeAccount(accNum);
+		BankingSystem.closeAccount(accNum);
+		boolean success = BankingSystem.returnStatus;
 		if (success) {
 			System.out.println("Account #" + accNum + " successfully closed.");
 		}
@@ -287,7 +289,7 @@ public class p1 {
 		customerMainMenu(currentID);
 	}
 
-	public void depositScreen() {
+	public void depositScreen(int currentID) {
 		String accNum="", amount="";
 		boolean accValid = false;
 		boolean amtValid = false;
@@ -315,38 +317,215 @@ public class p1 {
 
 		while (!amtValid) {
 			try {
-				System.out.println("Enter the initial deposit: ");
+				System.out.print("Enter the amount to deposit: ");
 				amount = scanner.next();
 				int amountAsInt = Integer.valueOf(amount);
 				if (amountAsInt >= 0) {
 					amtValid = true;
 				} else {
-					System.out.println("Error: initial deposit must be an integer greater than 0");
+					System.out.println("Error: deposit must be an integer greater than 0");
 				}
 			} catch (NumberFormatException e) {
-				System.out.println("Error: initial deposit must be an integer greater than 0");
+				System.out.println("Error: deposit must be an integer greater than 0");
 			}
 		}
 
 		// deposit amount
-		//boolean success = BankingSystem.deposit(accNum, amount);
+		BankingSystem.deposit(accNum, amount);
+		boolean success = BankingSystem.returnStatus;
+
+		if (success) {
+			System.out.println("Successfully deposited " + amount + " into account #" + accNum);
+		}
+
+		customerMainMenu(currentID);
 	}
 
-	public void withdrawScreen() {
+	public void withdrawScreen(int currentID) {
+		String accNum="", amount="";
+		boolean accValid = false;
+		boolean amtValid = false;
 
+		// validate user account input
+		while (!accValid) {
+			try {
+				System.out.print("Enter the account number: (Q to quit) ");
+				accNum = scanner.next();
+				int accNumAsInt = 0; 
+				
+				if (accNum.equals("Q") || accNum.equals("q")) {
+					break; // break from loop
+				} else if ((accNumAsInt = Integer.valueOf(accNum)) > 0 && BankingSystem.validateAccNum(accNumAsInt, currentID)) {
+					accValid = true;
+				} else {
+					System.out.println("Error: You may only withdraw from your own accounts");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Error: Account number must be an integer greater than 0");
+			}
+		}
+
+		// validate amount input
+		while (!amtValid) {
+			try {
+				System.out.print("Enter the amount to withdraw: ");
+				amount = scanner.next();
+				int amountAsInt = Integer.valueOf(amount);
+				if (amountAsInt >= 0) {
+					amtValid = true;
+				} else {
+					System.out.println("Error: withdraw must be an integer greater than 0");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Error: withdraw must be an integer greater than 0");
+			}
+		}
+
+		// withdraw amount
+		BankingSystem.withdraw(accNum, amount);
+		boolean success = BankingSystem.returnStatus;
+
+		if (success) {
+			System.out.println("Successfully withdrew " + amount + " from account #" + accNum);
+		}
+
+		customerMainMenu(currentID);
 	}
 
-	public void transferScreen() {
+	public void transferScreen(int currentID) {
 
+		String srcNum="", destNum="", amt="";
+		boolean srcValid = false;
+		boolean destValid = false;
+		boolean amtValid = false;
+
+		// validate source account number
+		while (!srcValid) {
+			try {
+				System.out.print("Enter the source account number: (Q to quit) ");
+				srcNum = scanner.next();
+				int srcNumAsInt = 0; 
+				
+				if (srcNum.equals("Q") || srcNum.equals("q")) {
+					break; // break from loop
+				} else if ((srcNumAsInt = Integer.valueOf(srcNum)) > 0 && BankingSystem.validateAccNum(srcNumAsInt, currentID)) {
+					srcValid = true;
+				} else {
+					System.out.println("Error: You may only transfer from your own accounts");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Error: Account number must be an integer greater than 0");
+			}
+		}
+
+		// validate destination account numebr
+		while (!destValid) {
+			try {
+				System.out.print("Enter the destination account number: (Q to quit) ");
+				destNum = scanner.next();
+				int destNumAsInt = 0; 
+				
+				if (destNum.equals("Q") || destNum.equals("q")) {
+					break; // break from loop
+				} else if ((destNumAsInt = Integer.valueOf(destNum)) < 0 ) { 
+					System.out.println("Error: Account number must be an integer greater than 0");
+				} else if (BankingSystem.validateAccNum(destNumAsInt)) {
+					destValid = true;
+				}else {
+					System.out.println("Error: Account number is not valid ");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Error: Account number must be an integer greater than 0");
+			}
+		}
+
+		// validate amount
+		while (!amtValid) {
+			try {
+				System.out.print("Enter the amount to transfer: ");
+				amt = scanner.next();
+				int amountAsInt = Integer.valueOf(amt);
+				if (amountAsInt >= 0) {
+					amtValid = true;
+				} else {
+					System.out.println("Error: amount must be an integer greater than 0");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Error: amount must be an integer greater than 0");
+			}
+		}
+
+		// transfer
+		BankingSystem.transfer(srcNum, destNum, amt);
+		boolean success = BankingSystem.returnStatus;
+
+		if (success) {
+			System.out.println("Successfully transfered " + amt + " from account #" + srcNum + " to " + destNum);
+		}
+
+		customerMainMenu(currentID);
 	}
 
-	public void accountSummaryScreen() {
+	public void accountSummaryScreen(int currentID) {
+		BankingSystem.accountSummary(currentID + "");
+		boolean success = BankingSystem.returnStatus;
 
+		customerMainMenu(currentID);
 	}
 
 	public void administratorMainMenu() {
+		System.out.println("Administrator Main Menu");
+		String input = "";
+		boolean valid = false;
 
+		//scanner.nextLine(); // clear the buffer
+
+		while (!valid) {
+			System.out.print("1. Account Summary for a Customer\n2. Report A: Customer Information with Total Balance in Decreasing Order\n3. Report B: Find the Average Total Balance Between Age Groups\n4.Exit\n");
+
+			input = scanner.next();
+			switch(input) {
+				case "1":
+					valid = true;
+					//openAccountScreen(currentID);
+					break;
+				case "2":
+					valid = true;
+					// closeAccountScreen(currentID);
+					break;
+				case "3":
+					valid = true;
+					// depositScreen(currentID);
+					break;
+				case "4":
+					valid = true;
+					mainMenu();
+					break;
+				default:
+					System.out.println("Error: invalid input.");
+			}
+		}
 	}
+
+	public void reportAScreen() {
+		BankingSystem.reportA();
+		boolean success = BankingSystem.returnStatus;
+
+		administratorMainMenu();
+	}
+
+	public void reportBScreen() {
+		
+
+		// validate min
+
+		// validate max
+		
+	}
+
+
+
+
 
 
 	public static void main(String argv[]) {
@@ -366,14 +545,4 @@ public class p1 {
 		System.out.println(":: PROGRAM END");
 	}
 
-
-    /*
-    prompt user for withdraw amt
-        call checkBalance()
-        while balance - amt < 0
-            keep prompting user
-        otherwise call withdraw()
-
-
-    */
 }

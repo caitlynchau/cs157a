@@ -21,6 +21,8 @@ public class BankingSystem {
 	private static Statement stmt;
 	private static ResultSet rs;
 
+	public static boolean returnStatus;
+
 	/**
 	 * Initialize database connection given properties file.
 	 * @param filename name of properties file
@@ -37,6 +39,8 @@ public class BankingSystem {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		returnStatus = false;
 	}
 	
 	/**
@@ -62,7 +66,7 @@ public class BankingSystem {
 	 * @param age customer age
 	 * @param pin customer pin
 	 */
-	public static boolean newCustomer(String name, String gender, String age, String pin) 
+	public static void newCustomer(String name, String gender, String age, String pin) 
 	{
 		
 		System.out.println(":: CREATE NEW CUSTOMER - RUNNING");
@@ -73,14 +77,14 @@ public class BankingSystem {
 			ageAsInt = Integer.parseInt(age);
 		} catch (NumberFormatException e) {
 			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID AGE");
-			return false;
+			returnStatus = false;
 		}
 
 		try {
 			pinAsInt = Integer.parseInt(pin);
 		} catch (NumberFormatException e) {
 			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID PIN");
-			return false;
+			returnStatus = false;
 		}
 		
 		try {
@@ -90,12 +94,10 @@ public class BankingSystem {
 			// System.out.println(query);
 			stmt.execute(query);
 			System.out.println(":: CREATE NEW CUSTOMER - SUCCESS");
-			return true;
+			returnStatus = true;
 		} catch (SQLException e) {
-			// System.out.println(e.getMessage());
-			// e.printStackTrace();
 			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID INPUT");
-			return false;
+			returnStatus = false;
 		} 
 		
 	}
@@ -106,7 +108,7 @@ public class BankingSystem {
 	 * @param type type of account
 	 * @param amount initial deposit amount
 	 */
-	public static boolean openAccount(String id, String type, String amount) 
+	public static void openAccount(String id, String type, String amount) 
 	{
 		System.out.println(":: OPEN ACCOUNT - RUNNING");
 
@@ -115,15 +117,12 @@ public class BankingSystem {
 			stmt = con.createStatement();
 			String query = "INSERT INTO p1.account(ID, BALANCE, TYPE, STATUS) VALUES (" 
 			+ id + ", " + amount + ", '" + type + "', '" + active + "')"; 
-			// System.out.println(query);
 			stmt.execute(query);
 			System.out.println(":: OPEN ACCOUNT - SUCCESS");
-			return true;
+			returnStatus = true;
 		}catch (SQLException e) {
-			// System.out.println(e.getMessage());
-			// e.printStackTrace();
 			System.out.println(":: OPEN ACCOUNT - ERROR - INVALID INPUT");
-			return false;
+			returnStatus = false;
 		}
 		
 	}
@@ -132,21 +131,17 @@ public class BankingSystem {
 	 * Close an account.
 	 * @param accNum account number
 	 */
-	public static boolean closeAccount(String accNum) 
+	public static void closeAccount(String accNum) 
 	{
 		System.out.println(":: CLOSE ACCOUNT - RUNNING");
 		try {
 	        stmt = con.createStatement(); 
-			String query = "UPDATE p1.account SET p1.account.status = 'I' AND SET p1.account.balance = 0 WHERE number = " + accNum;
-			// DELETE FROM p1.account WHERE number = '" + accNum + "'";
-			// System.out.println(query);
+			String query = "UPDATE p1.account SET status = 'I', balance = 0 WHERE accNum = " + accNum;
 			stmt.execute(query);
 			System.out.println(":: CLOSE ACCOUNT - SUCCESS");
-			return true;
+			returnStatus = true;
 		} catch (SQLException e) {
-			// System.out.println("Exception in main()");
-			// e.printStackTrace();
-			return false;
+			returnStatus = false;
 		}
 		
 	}
@@ -164,7 +159,6 @@ public class BankingSystem {
 			int inputAmt = Integer.valueOf(amount);
 			stmt = con.createStatement(); 
 			String query1 = "SELECT balance FROM p1.account WHERE number = " + accNum;
-			// System.out.println(query1);
 			rs = stmt.executeQuery(query1);
 			int currentBalance = 0;
 			while(rs.next()) {
@@ -176,10 +170,11 @@ public class BankingSystem {
 			// System.out.println(query2);
 			stmt.execute(query2);
 			System.out.println(":: DEPOSIT - SUCCESS");
+			returnStatus = true;
 		} catch (SQLException e) {
-			System.out.println("Exception in main()");
-			//e.printStackTrace();
+			returnStatus = false;
 		} catch (NumberFormatException e) {
+			returnStatus = false;
 			System.out.println(":: DEPOSIT - ERROR - INVALID AMOUNT");
 		}
 		
@@ -207,6 +202,7 @@ public class BankingSystem {
 			currentBalance -= inputAmt;
 			if (currentBalance < 0) {
 				System.out.println(":: WITHDRAW - ERROR - NOT ENOUGH FUNDS");
+				returnStatus = false;
 				return;
 			} else {
 				stmt = con.createStatement(); 
@@ -214,13 +210,15 @@ public class BankingSystem {
 				// System.out.println(query2);
 				stmt.execute(query2);
 				System.out.println(":: WITHDRAW - SUCCESS");
+				returnStatus = true;
 			}	
 		} catch (SQLException e) {
-			System.out.println("Exception in main()");
-			e.printStackTrace();
+			// System.out.println("Exception in main()");
+			// e.printStackTrace();
+			returnStatus = false;
 		} catch (NumberFormatException e) {
 			System.out.println(":: WITHDRAW - ERROR - INVALID AMOUNT");
-			//e.printStackTrace();
+			returnStatus = false;
 		}
 	}
 
@@ -258,6 +256,7 @@ public class BankingSystem {
 			balance2 += transfer;
 			if (balance1 < 0) {
 				System.out.println(":: TRANSFER - ERROR - NOT ENOUGH FUNDS");
+				returnStatus = false;
 				return;
 			} else {
 				//Withdraw from srcAcc
@@ -273,13 +272,14 @@ public class BankingSystem {
 				stmt.execute(updateAcc2);
 
 				System.out.println(":: TRANSFER - SUCCESS");
+				returnStatus = true;
 			}
 		
 		} catch (SQLException e) {
-			System.out.println("Exception in main()");
-			e.printStackTrace();
+			returnStatus = false;
 		} catch (NumberFormatException e) {
 			System.out.println(":: TRANSFER - ERROR - INVALID AMOUNT");
+			returnStatus = false;
 		}	
 	}
 
@@ -309,11 +309,13 @@ public class BankingSystem {
 			System.out.println("-----------------------");
 			System.out.printf("%-11s %11d\n", "TOTAL", total);
 			System.out.println(":: ACCOUNT SUMMARY - SUCCESS");
+			returnStatus = true;
 		} catch (SQLException e) {
-			System.out.println("Exception in main()");
+			// System.out.println("Exception in main()");
 
 		} catch (NumberFormatException e) {
 			System.out.println(":: ACCOUNT SUMMARY - ERROR - INVALID ID");
+			returnStatus = false;
 		}
 	}
 
@@ -341,9 +343,11 @@ public class BankingSystem {
 				System.out.printf("%11s %-15s %-6s %11s %11s \n", id, name, gender, age, tot);
 			}
 			System.out.println(":: REPORT A - SUCCESS");
+			returnStatus = true;
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			// System.out.println(e.getMessage());
+			// e.printStackTrace();
+			returnStatus = false;
 		}
 	}
 
