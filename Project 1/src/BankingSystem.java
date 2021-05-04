@@ -62,7 +62,7 @@ public class BankingSystem {
 	 * @param age customer age
 	 * @param pin customer pin
 	 */
-	public static void newCustomer(String name, String gender, String age, String pin) 
+	public static boolean newCustomer(String name, String gender, String age, String pin) 
 	{
 		
 		System.out.println(":: CREATE NEW CUSTOMER - RUNNING");
@@ -73,14 +73,14 @@ public class BankingSystem {
 			ageAsInt = Integer.parseInt(age);
 		} catch (NumberFormatException e) {
 			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID AGE");
-			return;
+			return false;
 		}
 
 		try {
 			pinAsInt = Integer.parseInt(pin);
 		} catch (NumberFormatException e) {
 			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID PIN");
-			return;
+			return false;
 		}
 		
 		try {
@@ -90,9 +90,12 @@ public class BankingSystem {
 			// System.out.println(query);
 			stmt.execute(query);
 			System.out.println(":: CREATE NEW CUSTOMER - SUCCESS");
+			return true;
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			// System.out.println(e.getMessage());
+			// e.printStackTrace();
+			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID INPUT");
+			return false;
 		} 
 		
 	}
@@ -103,7 +106,7 @@ public class BankingSystem {
 	 * @param type type of account
 	 * @param amount initial deposit amount
 	 */
-	public static void openAccount(String id, String type, String amount) 
+	public static boolean openAccount(String id, String type, String amount) 
 	{
 		System.out.println(":: OPEN ACCOUNT - RUNNING");
 
@@ -115,10 +118,12 @@ public class BankingSystem {
 			// System.out.println(query);
 			stmt.execute(query);
 			System.out.println(":: OPEN ACCOUNT - SUCCESS");
+			return true;
 		}catch (SQLException e) {
 			// System.out.println(e.getMessage());
 			// e.printStackTrace();
 			System.out.println(":: OPEN ACCOUNT - ERROR - INVALID INPUT");
+			return false;
 		}
 		
 	}
@@ -127,19 +132,21 @@ public class BankingSystem {
 	 * Close an account.
 	 * @param accNum account number
 	 */
-	public static void closeAccount(String accNum) 
+	public static boolean closeAccount(String accNum) 
 	{
 		System.out.println(":: CLOSE ACCOUNT - RUNNING");
 		try {
 	        stmt = con.createStatement(); 
-			String query = "UPDATE p1.account SET status = 'I' AND SET balance = 0 WHERE number = '" + accNum + "'";
+			String query = "UPDATE p1.account SET p1.account.status = 'I' AND SET p1.account.balance = 0 WHERE number = " + accNum;
 			// DELETE FROM p1.account WHERE number = '" + accNum + "'";
 			// System.out.println(query);
 			stmt.execute(query);
 			System.out.println(":: CLOSE ACCOUNT - SUCCESS");
+			return true;
 		} catch (SQLException e) {
-			System.out.println("Exception in main()");
-			e.printStackTrace();
+			// System.out.println("Exception in main()");
+			// e.printStackTrace();
+			return false;
 		}
 		
 	}
@@ -406,5 +413,82 @@ public class BankingSystem {
 			e.printStackTrace();
 		}
 		return id;
+	}
+
+	public static int getNewAccountNumber() {
+		int accNum = 0;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT MAX(p1.account.number) FROM p1.account";
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				accNum = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return accNum;
+	}
+
+	public static boolean validateID(String id) {
+		boolean success = false;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT COUNT(*) FROM p1.account WHERE p1.account.id = " + id;
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				int count = rs.getInt(1);
+				if (count > 0) {
+					success = true;
+				}
+			}
+		} catch (SQLException e) {
+			success = false;
+		} catch (NumberFormatException e) {
+			success = false;
+		}
+
+		return success;
+	}
+
+	public static boolean validateAccNum(int number, int id) {
+		boolean success = false;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT COUNT(*) FROM p1.account WHERE p1.account.id = " + id + " AND p1.account.number = " + number;
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				int count = rs.getInt(1);
+				if (count > 0) {
+					success = true;
+				}
+			}
+		} catch (SQLException e) {
+			success = false;
+		} catch (NumberFormatException e) {
+			success = false;
+		}
+
+		return success;
+	}
+
+	public static boolean validateAccNum(int number) {
+		boolean success = false;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT COUNT(*) FROM p1.account WHERE p1.account.number = " + number;
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				int count = rs.getInt(1);
+				if (count > 0) {
+					success = true;
+				}
+			}
+		} catch (SQLException e) {
+			success = false;
+		} catch (NumberFormatException e) {
+			success = false;
+		}
+		return success;
 	}
 }
