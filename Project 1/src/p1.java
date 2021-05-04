@@ -135,6 +135,7 @@ public class p1 {
 				customerMainMenu(Integer.valueOf(id));
 			} else {
 				System.out.println("Error: Invalid ID or PIN");
+				mainMenu();
 			}
 		}
 	}
@@ -259,13 +260,11 @@ public class p1 {
 		// validate account number input
 		while (!accValid) {
 			try {
-				System.out.print("Enter the account number: (Q to quit) ");
+				System.out.print("Enter the account number: ");
 				accNum = scanner.next();
 				int accNumAsInt = 0; 
 				
-				if (accNum.equals("Q") || accNum.equals("q")) {
-					break; // break from loop
-				} else if ((accNumAsInt = Integer.valueOf(accNum)) > 0 && BankingSystem.validateAccNum(accNumAsInt, currentID)) {
+				if ((accNumAsInt = Integer.valueOf(accNum)) > 0 && BankingSystem.validateAccNum(accNumAsInt, currentID)) {
 					accValid = true;
 				} else {
 					System.out.println("Error: You may only close your own accounts");
@@ -292,13 +291,11 @@ public class p1 {
 		// validate user account input
 		while (!accValid) {
 			try {
-				System.out.print("Enter the account number: (Q to quit) ");
+				System.out.print("Enter the account number: ");
 				accNum = scanner.next();
 				int accNumAsInt = 0; 
 				
-				if (accNum.equals("Q") || accNum.equals("q")) {
-					break; // break from loop
-				} else if ((accNumAsInt = Integer.valueOf(accNum)) < 0 ) { 
+				if ((accNumAsInt = Integer.valueOf(accNum)) < 0 ) { 
 					System.out.println("Error: Account number must be an integer greater than 0");
 				} else if (BankingSystem.validateAccNum(accNumAsInt)) {
 					accValid = true;
@@ -344,13 +341,11 @@ public class p1 {
 		// validate user account input
 		while (!accValid) {
 			try {
-				System.out.print("Enter the account number: (Q to quit) ");
+				System.out.print("Enter the account number: ");
 				accNum = scanner.next();
 				int accNumAsInt = 0; 
 				
-				if (accNum.equals("Q") || accNum.equals("q")) {
-					break; // break from loop
-				} else if ((accNumAsInt = Integer.valueOf(accNum)) > 0 && BankingSystem.validateAccNum(accNumAsInt, currentID)) {
+				if ((accNumAsInt = Integer.valueOf(accNum)) > 0 && BankingSystem.validateAccNum(accNumAsInt, currentID)) {
 					accValid = true;
 				} else {
 					System.out.println("Error: You may only withdraw from your own accounts");
@@ -397,13 +392,11 @@ public class p1 {
 		// validate source account number
 		while (!srcValid) {
 			try {
-				System.out.print("Enter the source account number: (Q to quit) ");
+				System.out.print("Enter the source account number: ");
 				srcNum = scanner.next();
 				int srcNumAsInt = 0; 
 				
-				if (srcNum.equals("Q") || srcNum.equals("q")) {
-					break; // break from loop
-				} else if ((srcNumAsInt = Integer.valueOf(srcNum)) > 0 && BankingSystem.validateAccNum(srcNumAsInt, currentID)) {
+				if ((srcNumAsInt = Integer.valueOf(srcNum)) > 0 && BankingSystem.validateAccNum(srcNumAsInt, currentID)) {
 					srcValid = true;
 				} else {
 					System.out.println("Error: You may only transfer from your own accounts");
@@ -416,7 +409,7 @@ public class p1 {
 		// validate destination account numebr
 		while (!destValid) {
 			try {
-				System.out.print("Enter the destination account number: (Q to quit) ");
+				System.out.print("Enter the destination account number: ");
 				destNum = scanner.next();
 				int destNumAsInt = 0; 
 				
@@ -455,7 +448,7 @@ public class p1 {
 		boolean success = BankingSystem.returnStatus;
 
 		if (success) {
-			System.out.println("Successfully transfered " + amt + " from account #" + srcNum + " to " + destNum);
+			System.out.println("Successfully transfered " + amt + " from account #" + srcNum + " to #" + destNum);
 		}
 
 		customerMainMenu(currentID);

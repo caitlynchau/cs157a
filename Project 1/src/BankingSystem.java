@@ -78,6 +78,7 @@ public class BankingSystem {
 		} catch (NumberFormatException e) {
 			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID AGE");
 			returnStatus = false;
+			return;
 		}
 
 		try {
@@ -85,6 +86,7 @@ public class BankingSystem {
 		} catch (NumberFormatException e) {
 			System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID PIN");
 			returnStatus = false;
+			return;
 		}
 		
 		try {
@@ -136,7 +138,7 @@ public class BankingSystem {
 		System.out.println(":: CLOSE ACCOUNT - RUNNING");
 		try {
 	        stmt = con.createStatement(); 
-			String query = "UPDATE p1.account SET status = 'I', balance = 0 WHERE accNum = " + accNum;
+			String query = "UPDATE p1.account SET status = 'I', balance = 0 WHERE number = " + accNum;
 			stmt.execute(query);
 			System.out.println(":: CLOSE ACCOUNT - SUCCESS");
 			returnStatus = true;
@@ -294,8 +296,7 @@ public class BankingSystem {
 			int total = 0;
 			int id = Integer.valueOf(cusID);
 			stmt = con.createStatement();
-			String query = "SELECT p1.account.number, p1.account.balance FROM p1.account WHERE id = " + id;
-			// System.out.println(query);
+			String query = "SELECT p1.account.number, p1.account.balance FROM p1.account WHERE id = " + id + " AND status = 'A'";
 			rs = stmt.executeQuery(query);
 
 			System.out.printf("%-11s %-11s \n", "NUMBER", "BALANCE");
@@ -311,8 +312,7 @@ public class BankingSystem {
 			System.out.println(":: ACCOUNT SUMMARY - SUCCESS");
 			returnStatus = true;
 		} catch (SQLException e) {
-			// System.out.println("Exception in main()");
-
+			returnStatus = false;
 		} catch (NumberFormatException e) {
 			System.out.println(":: ACCOUNT SUMMARY - ERROR - INVALID ID");
 			returnStatus = false;
