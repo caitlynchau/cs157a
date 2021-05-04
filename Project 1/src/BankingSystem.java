@@ -106,7 +106,6 @@ public class BankingSystem {
 	public static void openAccount(String id, String type, String amount) 
 	{
 		System.out.println(":: OPEN ACCOUNT - RUNNING");
-				/* insert your code here */
 
 		String active = "A";
 		try {
@@ -117,8 +116,9 @@ public class BankingSystem {
 			stmt.execute(query);
 			System.out.println(":: OPEN ACCOUNT - SUCCESS");
 		}catch (SQLException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			// System.out.println(e.getMessage());
+			// e.printStackTrace();
+			System.out.println(":: OPEN ACCOUNT - ERROR - INVALID INPUT");
 		}
 		
 	}
@@ -132,7 +132,8 @@ public class BankingSystem {
 		System.out.println(":: CLOSE ACCOUNT - RUNNING");
 		try {
 	        stmt = con.createStatement(); 
-			String query = "DELETE FROM p1.account WHERE number = '" + accNum + "'";
+			String query = "UPDATE p1.account SET status = 'I' AND SET balance = 0 WHERE number = '" + accNum + "'";
+			// DELETE FROM p1.account WHERE number = '" + accNum + "'";
 			// System.out.println(query);
 			stmt.execute(query);
 			System.out.println(":: CLOSE ACCOUNT - SUCCESS");
@@ -369,5 +370,41 @@ public class BankingSystem {
 			e.printStackTrace();
 		}
 		System.out.println(":: REPORT B - SUCCESS");
+	}
+
+	public static boolean validatePIN(String idInput, String pinInput) {
+		boolean success = false;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT p1.customer.pin FROM p1.customer WHERE p1.customer.id = " + idInput;
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				int pinQuery = rs.getInt(1);
+				if (Integer.valueOf(pinInput) == pinQuery) {
+					success = true;
+				}
+			}
+		} catch (SQLException e) {
+			//e.printStackTrace();
+			success = false;
+		} catch (NumberFormatException e) {
+			success = false;
+		}
+		return success;
+	}
+
+	public static int getNewID() {
+		int id = 0;
+		try {
+			stmt = con.createStatement();
+			String query = "SELECT MAX(p1.customer.id) FROM p1.customer";
+			rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				id = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return id;
 	}
 }

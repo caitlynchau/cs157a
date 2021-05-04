@@ -14,6 +14,7 @@ public class ProgramLauncher {
 			BankingSystem.testConnection();
 			System.out.println();
 			BatchInputProcessor.run(argv[0]);
+
 		}
 
 		System.out.println(":: PROGRAM END");
