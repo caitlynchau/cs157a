@@ -8,6 +8,9 @@ import java.util.Properties;
 
 /**
  * Manage connection to database and perform SQL statements.
+ * @author Caitlyn Chau
+ * CS 157A
+ * Project 1
  */
 public class BankingSystem {
 	// Connection properties
