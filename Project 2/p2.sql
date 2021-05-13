@@ -147,7 +147,7 @@ begin
   fetch c3 into accStatus;
   close c3;
 
-  -- check if valid account number or if account is invalid
+  -- check if valid account number or if account is inactive
   if accExists <= 0 or accStatus != 'A' then
     set sql_code = -100;
     set err_msg = 'Invalid account number';
@@ -190,7 +190,7 @@ begin
   fetch c2 into balance;
   close c2;
 
-  -- check if valid account number or if account is invalid
+  -- check if valid account number or if account is inactive
   if accExists <= 0 or accStatus != 'A' then
     set sql_code = -100;
     set err_msg = 'Invalid account number';
@@ -214,6 +214,77 @@ begin
   end if;
 end@
 
+
+-- Transfer Procedure
+create procedure P2.ACCT_TRX
+(in src_acct integer, in dest_acct integer, in amt integer, out sql_code integer, out err_msg char(100))
+language sql
+begin
+  declare withdrawErrorCode integer;
+  declare depositErrorCode integer;
+  declare withdrawMsg char(100) default '';
+  declare depositMsg char(100) default '';
+  declare srcAccExists integer;
+  declare destAccExists integer;
+  declare srcAccStatus char(1);
+  declare destAccStatus char(1);
+
+  declare c1 cursor for select count(*) from p2.account where p2.account.number = src_acct;
+  declare c2 cursor for select status from p2.account where p2.account.number = src_acct;
+  declare c3 cursor for select count(*) from p2.account where p2.account.number = dest_acct;
+  declare c4 cursor for select status from p2.account where p2.account.number = dest_acct;
+  
+  open c1;
+  fetch c1 into srcAccExists;
+  close c1;
+
+  open c2;
+  fetch c2 into srcAccStatus;
+  close c2;
+
+  open c3;
+  fetch c3 into destAccExists;
+  close c3;
+
+  open c4;
+  fetch c4 into destAccStatus;
+  close c4;
+
+  -- check if transfer amount < 0
+  if amt < 0 then
+    set err_msg = 'Invalid amount';
+    set sql_code = -100;
+  else
+    -- try to withdraw
+    call P2.ACCT_WTH(src_acct, amt, withdrawErrorCode, withdrawMsg);
+    if withdrawErrorCode = 0 then
+      -- successful withdraw
+      call P2.ACCT_DEP(dest_acct, amt, depositErrorCode, depositMsg);
+    else 
+      -- unsuccessful withdraw
+      set err_msg = 'Transfer unsuccessful';
+      set sql_code = -100;
+    end if;
+
+  end if;
+
+end@
+
+-- Add Interest Procedure
+create procedure P2.ADD_INTEREST
+(in s_rate decfloat, in c_rate decfloat, out sql_code integer, out err_msg char(100)) 
+language sql
+begin
+  if s_rate <= 0 or c_rate <= 0 then
+    set sql_code = -100;
+    set err_msg = 'Invalid interest rates';
+  else
+    update p2.account set balance = balance+(balance * s_rate) where status = 'A' and type = 'S';
+    update p2.account set balance = balance+(balance * c_rate) where status = 'A' and type = 'C';
+    set err_msg = '-';
+    set sql_code = 0;
+  end if;
+end@
 
 --
 TERMINATE@
