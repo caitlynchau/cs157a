@@ -172,7 +172,7 @@ language sql
 begin
 
   declare accExists integer;
-  declare balance integer;
+  declare currentBalance integer;
   declare accStatus char(1);
   declare c1 cursor for select count(*) from p2.account where p2.account.number = p_number;
   declare c2 cursor for select balance from p2.account where p2.account.number = p_number;
@@ -187,7 +187,7 @@ begin
   close c3;
 
   open c2;
-  fetch c2 into balance;
+  fetch c2 into currentBalance;
   close c2;
 
   -- check if valid account number or if account is inactive
@@ -199,14 +199,14 @@ begin
     set err_msg = 'Invalid amount';
     set sql_code = -100;
   else 
-      -- check if enough funds to withdraw
-    set balance = balance - p_amt;
-    if balance < 0 then
+    -- check if enough funds to withdraw
+    set currentBalance = currentBalance - p_amt;
+    if currentBalance < 0 then
       set err_msg = 'Not enough funds';
       set sql_code = -100;
     else
       -- successful withdraw
-      update p2.account set p2.account.balance = balance where p2.account.number = p_number;
+      update p2.account set p2.account.balance = currentBalance where p2.account.number = p_number;
       set err_msg = '-';
       set sql_code = 0;
     end if;
