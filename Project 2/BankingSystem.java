@@ -28,6 +28,7 @@ public class BankingSystem {
 	private static ResultSet rs;
 
 	public static int returnCode;
+	public static String returnMsg;
 
 	/**
 	 * Initialize database connection given properties file.
@@ -74,11 +75,7 @@ public class BankingSystem {
 	 */
 	public static void newCustomer(String name, String gender, String age, String pin) 
 	{
-		
-		System.out.println(":: CREATE NEW CUSTOMER - RUNNING");
-        try {
-			// con = DriverManager.getConnection(url, username, password);
-			// con.setAutoCommit(false);
+		try {
             cstmt = con.prepareCall("CALL P2.CUST_CRT(?,?,?,?,?,?,?)");
             cstmt.setString(1, name);
             cstmt.setString(2, gender);
@@ -87,20 +84,20 @@ public class BankingSystem {
 			cstmt.registerOutParameter(5, Types.INTEGER); 	// customer ID
 			cstmt.registerOutParameter(6, Types.INTEGER);
 			cstmt.registerOutParameter(7, Types.CHAR);
-
             cstmt.executeUpdate();
-            System.out.println(":: CREATE NEW CUSTOMER - SUCCESS");
+
             int id = cstmt.getInt(5);
-            System.out.println("Your ID is " + id);
+			returnCode = cstmt.getInt(6);
+			returnMsg = cstmt.getString(7);
+			System.out.println(returnMsg);
+			if (returnCode == 1) System.out.println("Your ID is " + id);
         } catch (SQLException e) {
-            System.out.println(":: CREATE NEW CUSTOMER - ERROR - INVALID INPUT");
-			returnCode = -100;
+            System.out.println("Error: Could not create new customer. Invalid input.");
         }
-		
 	}
 
-	public static int login(String idInput, String pinInput) {
-		int success = 0; // false
+	public static boolean login(String idInput, String pinInput) {
+		boolean success = false;
 		try {
 			cstmt = con.prepareCall("CALL P2.CUST_LOGIN(?,?,?,?,?)");
 			cstmt.setString(1, idInput);
@@ -109,12 +106,17 @@ public class BankingSystem {
 			cstmt.registerOutParameter(4, Types.INTEGER);
 			cstmt.registerOutParameter(5, Types.CHAR);
 			cstmt.executeUpdate();
-			success = cstmt.getInt(3);
+			int valid = cstmt.getInt(3);
+			returnCode = cstmt.getInt(4);
+			returnMsg = cstmt.getString(5);
+			System.out.println(returnMsg);
+			if (valid == 1) success = true;
 		} catch (SQLException e) {
-			e.printStackTrace();
-			success = 0;
+			System.out.println("Error: Incorrect id or pin");
+			returnCode = -100;
 		} catch (NumberFormatException e) {
-			success = 0;
+			System.out.println("Error: Incorrect id or pin");
+			returnCode = -100;
 		}
 		return success;
 	}
@@ -127,7 +129,6 @@ public class BankingSystem {
 	 */
 	public static void openAccount(String id, String type, String amount) 
 	{
-		System.out.println(":: OPEN ACCOUNT - RUNNING");
 		try {
 			cstmt = con.prepareCall("CALL P2.ACCT_OPN(?,?,?,?,?,?)");
 			cstmt.setString(1, id);
@@ -139,12 +140,14 @@ public class BankingSystem {
 			cstmt.executeUpdate();
 
 			int accNum = cstmt.getInt(4);
-			System.out.println(accNum);
-			System.out.println(":: OPEN ACCOUNT - SUCCESS");
-			System.out.println("The account number is " + accNum);
+			returnCode = cstmt.getInt(5);
+			returnMsg = cstmt.getString(6);
+			System.out.println(returnMsg);
+			if (returnCode == 1) 
+				System.out.println("The account number is " + accNum);
 		}catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println(":: OPEN ACCOUNT - ERROR - INVALID INPUT");
+			//e.printStackTrace();
+			System.out.println("Error: Could not open new account");
 			returnCode = -100;
 		}
 	}
@@ -155,24 +158,20 @@ public class BankingSystem {
 	 */
 	public static void closeAccount(String accNum) 
 	{
-		int sql_code = 0;
-		String err_msg = "";
 		try {
 		    CallableStatement cstmt = con.prepareCall("CALL p2.ACCT_CLS(?, ?, ?)");
 			cstmt.setString(1, accNum);
 			cstmt.registerOutParameter(2, Types.INTEGER);
 			cstmt.registerOutParameter(3, Types.CHAR);
 			cstmt.executeUpdate();
-			sql_code = cstmt.getInt(2);
-			err_msg = cstmt.getString(3);
-			returnCode = sql_code;
+			returnCode = cstmt.getInt(2);
+			returnMsg = cstmt.getString(3);
+			System.out.println(returnMsg);
+			if (returnCode != 1) System.out.println("Failed to close account # " + accNum);
 		} catch (SQLException e) {
-			System.out.println("Error: Failed to close account # " + accNum);
-			// System.out.println("err_msg = " + err_msg);
+			System.out.println("Failed to close account # " + accNum);
 		}
 	}
-
-
 
 	/**
 	 * Deposit into an account.
@@ -181,7 +180,6 @@ public class BankingSystem {
 	 */
 	public static void deposit(String accNum, String amount) 
 	{
-		// System.out.println(":: DEPOSIT - RUNNING");
 		try {
 		    cstmt = con.prepareCall("CALL p2.ACCT_DEP(?, ?, ?, ?)");
 			cstmt.setString(1, accNum);
@@ -189,11 +187,12 @@ public class BankingSystem {
 			cstmt.registerOutParameter(3, Types.INTEGER);		
 			cstmt.registerOutParameter(4, Types.INTEGER);
 			cstmt.executeUpdate();
-			// int sqlcode = cstmt.getInt(3);
-			// String err_msg = cstmt.getString(4);
+
+			returnCode = cstmt.getInt(3);
+			returnMsg = cstmt.getString(4);
+			System.out.println(returnMsg);
 		} catch (SQLException e) {
 			System.out.println("Error: failed to deposit");
-			// e.printStackTrace();
 		}
 	}
 
@@ -214,11 +213,11 @@ public class BankingSystem {
 			cstmt.registerOutParameter(3, Types.INTEGER);		
 			cstmt.registerOutParameter(4, Types.INTEGER);
 			cstmt.executeUpdate();
-			// int sqlcode = cstmt.getInt(3);
-			// String err_msg = cstmt.getString(4);
+			returnCode = cstmt.getInt(3);
+			returnMsg= cstmt.getString(4);
+			System.out.println(returnMsg);
 		} catch (SQLException e) {
-			System.out.println(":: TEST - FAILED TO WITHDRAW");
-			// e.printStackTrace();
+			System.out.println("Error: failed to withdraw");
 		}
 	}
 
@@ -232,7 +231,6 @@ public class BankingSystem {
 	 */
 	public static void transfer(String srcAccNum, String destAccNum, String amount) 
 	{
-		//System.out.println(":: TRANSFER - RUNNING");
 		try {
 		    cstmt = con.prepareCall("CALL p2.ACCT_TRX(?, ?, ?, ?, ?)");
 			cstmt.setString(1, srcAccNum);
@@ -241,15 +239,11 @@ public class BankingSystem {
 			cstmt.registerOutParameter(4, Types.INTEGER);		
 			cstmt.registerOutParameter(5, Types.INTEGER);
 			cstmt.executeUpdate();
-			int sqlcode = cstmt.getInt(4);
-			String err_msg = cstmt.getString(5);
-			if (sqlcode == -100) {
-				System.out.println(err_msg);
-			}
-			returnCode = sqlcode;
+			returnCode = cstmt.getInt(4);
+			returnMsg = cstmt.getString(5);
+			System.out.println(returnMsg);
 		} catch (SQLException e) {
-			System.out.println("Error: failed to transfer");
-			// e.printStackTrace();
+			System.out.println("Error: Failed to transfer");
 		}
 	}
 
@@ -354,10 +348,7 @@ public class BankingSystem {
 		}
 	}
 
-
 	public static void addInterest(String cRate, String sRate) {
-		int sql_code = 0;
-		String err_msg = "";
 		try {
 		    CallableStatement cstmt = con.prepareCall("CALL p2.ADD_INTEREST(?,?,?,?)");
 			cstmt.setString(1, cRate);
@@ -365,12 +356,11 @@ public class BankingSystem {
 			cstmt.registerOutParameter(3, Types.INTEGER);
 			cstmt.registerOutParameter(4, Types.CHAR);
 			cstmt.executeUpdate();
-			returnCode = sql_code = cstmt.getInt(3);
-			err_msg = cstmt.getString(4);
-
+			returnCode = cstmt.getInt(3);
+			returnMsg = cstmt.getString(4);
+			System.out.println(returnMsg);
 		} catch (SQLException e) {
-			System.out.println(err_msg);
-			//e.printStackTrace();
+			System.out.println("Error: interest failed");
 		}
 	}
 
