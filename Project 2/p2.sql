@@ -12,6 +12,9 @@ DROP PROCEDURE P2.ACCT_DEP@
 DROP PROCEDURE P2.ACCT_WTH@
 DROP PROCEDURE P2.ACCT_TRX@
 DROP PROCEDURE P2.ADD_INTEREST@
+
+drop procedure p2.VAL_ACC_NUM@
+drop procedure p2.HAS_ACCTS@
 --
 --
 
@@ -301,23 +304,39 @@ begin
   end if;
 end@
 
--- create procedure P2.ACCT_EXISTS
--- (in number integer, out exists integer, out sql_code integer, out err_msg char(100))
--- language sql
--- begin
---   declare count integer;
---   declare cursor c1 for select count(*) from p2.account where p2.account.number = number;
---   open c1;
---   fetch c1 into count;
---   close c1;
---   if count > 0 then
---     set exists = 1; -- true
---   else 
---     set exists = 0;
---   end if;
---   set error_msg = 'acct exists';
---   set sql_code = 1;
--- end@
+-- Procedure to check if customer ID has active accounts
+create procedure p2.HAS_ACCTS
+(in currID integer, out sql_code integer)
+language sql
+begin
+  declare res integer;
+  declare c1 cursor for select count(*) from p2.account where p2.account.id = currID and p2.account.status = 'A';
+  open c1;
+  fetch c1 into res;
+  close c1;
+  if res > 0 then
+    set sql_code = 1;
+  else
+    set sql_code = 0;
+  end if;
+end@
+
+-- Procedure to cehck if this customer has a specified account number
+create procedure p2.VAL_ACC_NUM
+(in accNum integer, in currID integer, out sql_code integer) 
+language sql
+begin
+  declare res integer;
+  declare c1 cursor for select count(*) from p2.account where p2.account.id = currID and number = accNum and status = 'A';
+  open c1;
+  fetch c1 into res;
+  close c1;
+  if res > 0 then
+    set sql_code = 1;
+  else
+    set sql_code = 0;
+  end if;
+end@
 
 --
 TERMINATE@

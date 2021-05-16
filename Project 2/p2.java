@@ -152,7 +152,7 @@ public class p2 {
 		System.out.print("Enter the account number: ");
         accNum = scanner.next();
 
-		BankingSystem.closeAccount(accNum);
+		BankingSystem.closeAccount(accNum, currentID+"");
 		customerMainMenu(currentID);
 	}
 
@@ -182,7 +182,7 @@ public class p2 {
         amount = scanner.next();
 
 		// withdraw amount
-		BankingSystem.withdraw(accNum, amount);
+		BankingSystem.withdraw(accNum, amount, currentID+"");
 
 		customerMainMenu(currentID);
 
@@ -251,7 +251,7 @@ public class p2 {
 		System.out.print("Enter the amount to transfer: ");
 		amt = scanner.next();
 
-		BankingSystem.transfer(srcNum, destNum, amt);
+		BankingSystem.transfer(srcNum, destNum, amt, currentID+"");
 		customerMainMenu(currentID);
 
 

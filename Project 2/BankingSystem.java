@@ -156,10 +156,33 @@ public class BankingSystem {
 	 * Close an account.
 	 * @param accNum account number
 	 */
-	public static void closeAccount(String accNum) 
+	public static void closeAccount(String accNum, String currID) 
 	{
 		try {
-		    CallableStatement cstmt = con.prepareCall("CALL p2.ACCT_CLS(?, ?, ?)");
+			// check if any open accounts
+			cstmt = con.prepareCall("CALL p2.HAS_ACCTS(?, ?)");
+			cstmt.setString(1, currID);
+			cstmt.registerOutParameter(2, Types.INTEGER);
+			cstmt.executeUpdate();
+			int hasAccounts = cstmt.getInt(2);
+			if (hasAccounts == 0) {
+				System.out.println("Error: You have no active accounts to close");
+				return;
+			}
+
+			// check if accout number is valid for this customer
+			cstmt = con.prepareCall("CALL p2.VAL_ACC_NUM(?, ?, ?)");
+			cstmt.setString(1, accNum);
+			cstmt.setString(2, currID);
+			cstmt.registerOutParameter(3, Types.INTEGER);
+			cstmt.executeUpdate();
+			int validAcc = cstmt.getInt(3);
+			if (validAcc == 0) {
+				System.out.println("Error: You can only close your accounts");
+				return;
+			}
+
+		    cstmt = con.prepareCall("CALL p2.ACCT_CLS(?, ?, ?)");
 			cstmt.setString(1, accNum);
 			cstmt.registerOutParameter(2, Types.INTEGER);
 			cstmt.registerOutParameter(3, Types.CHAR);
@@ -203,11 +226,33 @@ public class BankingSystem {
 	 * @param accNum account number
 	 * @param amount withdraw amount
 	 */
-	public static void withdraw(String accNum, String amount) 
+	public static void withdraw(String accNum, String amount, String currID) 
 	{
-		//System.out.println(":: WITHDRAW - RUNNING");
 		try {
-		    CallableStatement cstmt = con.prepareCall("CALL p2.ACCT_WTH(?, ?, ?, ?)");
+			// check if customer has any accounts
+			cstmt = con.prepareCall("CALL p2.HAS_ACCTS(?, ?)");
+			cstmt.setString(1, currID);
+			cstmt.registerOutParameter(2, Types.INTEGER);
+			cstmt.executeUpdate();
+			int hasAccounts = cstmt.getInt(2);
+			if (hasAccounts == 0) {
+				System.out.println("You have no active accounts to withdraw from");
+				return;
+			}
+
+			// check if accout number is valid for this customer
+			cstmt = con.prepareCall("CALL p2.VAL_ACC_NUM(?, ?, ?)");
+			cstmt.setString(1, accNum);
+			cstmt.setString(2, currID);
+			cstmt.registerOutParameter(3, Types.INTEGER);
+			cstmt.executeUpdate();
+			int validAcc = cstmt.getInt(3);
+			if (validAcc == 0) {
+				System.out.println("Error: You can only withdraw from your accounts");
+				return;
+			}
+
+		    cstmt = con.prepareCall("CALL p2.ACCT_WTH(?, ?, ?, ?)");
 			cstmt.setString(1, accNum);
 			cstmt.setString(2, amount);
 			cstmt.registerOutParameter(3, Types.INTEGER);		
@@ -222,16 +267,28 @@ public class BankingSystem {
 	}
 
 
-
 	/**
 	 * Transfer amount from source account to destination account. 
 	 * @param srcAccNum source account number
 	 * @param destAccNum destination account number
 	 * @param amount transfer amount
 	 */
-	public static void transfer(String srcAccNum, String destAccNum, String amount) 
+	public static void transfer(String srcAccNum, String destAccNum, String amount, String currID) 
 	{
 		try {
+			// check if accout number is valid for this customer
+			cstmt = con.prepareCall("CALL p2.VAL_ACC_NUM(?, ?, ?)");
+			cstmt.setString(1, srcAccNum);
+			cstmt.setString(2, currID);
+			cstmt.registerOutParameter(3, Types.INTEGER);
+			cstmt.executeUpdate();
+			int validAcc = cstmt.getInt(3);
+			if (validAcc == 0) {
+				System.out.println("Error: You can only transfer from your active accounts");
+				return;
+			}
+
+
 		    cstmt = con.prepareCall("CALL p2.ACCT_TRX(?, ?, ?, ?, ?)");
 			cstmt.setString(1, srcAccNum);
 			cstmt.setString(2, destAccNum);
